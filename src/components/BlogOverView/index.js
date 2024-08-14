@@ -52,12 +52,18 @@ export default function BlogOverview() {
     console.log(blog);
   }
   async function deleteBlog(id) {
-    const apires = await fetch(`/api/delete-blog?id=${id}`, {
-      method: "DELETE",
-    });
-    const res = await apires.json();
-    if (res?.success) {
-      setBlogList((prevBlogs) => prevBlogs.filter((blog) => blog._id !== id));
+    try {
+      const apires = await fetch(`/api/delete-blog?id=${id}`, {
+        method: "DELETE",
+      });
+      const res = await apires.json();
+      if (res?.success) {
+        setBlogList((prevBlogs) => prevBlogs.filter((blog) => blog._id !== id));
+      } else {
+        console.log("Failed to delete blog:", res.message);
+      }
+    } catch (err) {
+      console.log("Error deleting blog:", err);
     }
   }
 
@@ -73,29 +79,42 @@ export default function BlogOverview() {
     setLoading(true);
     try {
       if (editBlogId) {
-        console.log(editBlogId);
         const apires = await fetch(`/api/update-blog?id=${editBlogId}`, {
           method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(formData),
         });
         const res = await apires.json();
-        console.log(res);
+        if (res.success) {
+          // Update blogList with the edited blog
+          setBlogList((prevBlogs) =>
+            prevBlogs.map((blog) =>
+              blog._id === editBlogId ? { ...blog, ...formData } : blog
+            )
+          );
+        }
       } else {
         const apires = await fetch("/api/add-blog", {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(formData),
         });
         const res = await apires.json();
-        console.log(res);
+        if (res.success) {
+          // Fetch the updated blog list after adding a new blog
+          const updatedBlogs = await fetchBlogs();
+          setBlogList(updatedBlogs);
+        }
       }
-      // Reset the formData after successful save
+      // Reset formData after successful save
       setFormData(initialData);
       setOpenDialog(false);
-      // Fetch the updated blog list after adding a new blog
-      const updatedBlogs = await fetchBlogs();
-      setBlogList(updatedBlogs);
     } catch (e) {
-      console.log(e);
+      console.log("Error saving blog:", e);
     } finally {
       setLoading(false);
     }

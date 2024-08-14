@@ -1,7 +1,6 @@
 import connectDb from "@/database";
 import { NextResponse } from "next/server";
 import Blog from "@/models/blog";
-
 export async function DELETE(req) {
   try {
     await connectDb();
@@ -18,16 +17,19 @@ export async function DELETE(req) {
     if (deleteCurrentBlogId) {
       return NextResponse.json({
         success: true,
-        message: "delete current blog",
+        message: "Blog deleted successfully",
       });
     } else {
-      console.log("error in deleting the blog");
+      return NextResponse.json({
+        success: false,
+        message: "Blog not found",
+      });
     }
   } catch (e) {
     console.log(e);
     return NextResponse.json({
-      sucess: false,
-      message: "error in deleting the data",
+      success: false,
+      message: "Error in deleting the blog",
     });
   }
 }
