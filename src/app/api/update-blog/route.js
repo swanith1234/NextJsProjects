@@ -12,7 +12,7 @@ export async function PUT(req) {
     await connectDb();
     const { searchParams } = new URL(req.url);
     const getCurrentBlogId = searchParams.get("id");
-    console.log(getCurrentBlogId);
+    console.log("swanith",getCurrentBlogId);
     if (!getCurrentBlogId) {
       return NextResponse.json({
         sucess: false,
