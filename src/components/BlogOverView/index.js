@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 
 async function fetchBlogs() {
   try {
-    const apires = await fetch("http://localhost:3000/api/get-blog", {
+    const apires = await fetch("https://next-js-projects-beige.vercel.app/api/get-blog", {
       method: "GET",
       cache: "no-store",
     });
